@@ -1,0 +1,19 @@
+{
+  "name": "sealos-fast-deploy",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "echarts": "^5.4.1",
+    "react-hook-form": "^7.45.1",
+    "react-markdown": "^8.0.4",
+    "react-syntax-highlighter": "^15.5.0"
+  },
+  "devDependencies": {
+    "@types/react-syntax-highlighter": "^15.5.6"
+  }
+}
