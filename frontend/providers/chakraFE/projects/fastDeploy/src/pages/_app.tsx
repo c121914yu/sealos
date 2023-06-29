@@ -12,7 +12,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import throttle from 'lodash/throttle';
 import { useGlobalStore } from '@/store/global';
 import { useLoading } from '@/hooks/useLoading';
-import { getServiceEnv, getUserPrice, SEALOS_DOMAIN } from '@/store/static';
+import { getUserPrice } from '@/store/static';
 import { useRouter } from 'next/router';
 import { appWithTranslation, useTranslation } from 'next-i18next';
 import { getLangStore, setLangStore } from '@/utils/cookieUtils';
@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
   }
 });
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = ({ Component, pageProps, domain }: AppProps & { domain: string }) => {
   const router = useRouter();
   const { i18n } = useTranslation();
   const { setScreenWidth, loading, setLastRoute } = useGlobalStore();
@@ -50,7 +50,6 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     NProgress.start();
 
-    getServiceEnv();
     getUserPrice();
     const response = createSealosApp();
 
@@ -65,7 +64,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           localStorage.removeItem('session');
 
           openConfirm(() => {
-            window.open(`https://${SEALOS_DOMAIN}`, '_self');
+            window.open(`https://${domain}`, '_self');
           })();
         }
       }
@@ -73,7 +72,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     NProgress.done();
 
     return response;
-  }, []);
+  }, [domain, openConfirm]);
 
   // add resize event
   useEffect(() => {
@@ -145,6 +144,10 @@ const App = ({ Component, pageProps }: AppProps) => {
       </QueryClientProvider>
     </>
   );
+};
+
+App.getInitialProps = async () => {
+  return { domain: process.env.SEALOS_DOMAIN || 'cloud.sealos.io' };
 };
 
 export default appWithTranslation(App);

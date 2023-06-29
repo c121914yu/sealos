@@ -7,19 +7,19 @@ import { defaultEditVal, editModeMap } from '@/constants/editApp';
 import debounce from 'lodash/debounce';
 import { postDeployApp } from '@/api/app';
 import { useConfirm } from '@/hooks/useConfirm';
-import type { AppEditType } from '@/types/app';
 import { useToast } from '@/hooks/useToast';
 import { useLoading } from '@/hooks/useLoading';
 import Header from './components/Header';
 import Form from './components/Form';
 import Yaml from './components/Yaml';
 import dynamic from 'next/dynamic';
-const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 import { useGlobalStore } from '@/store/global';
 import { serviceSideProps } from '@/utils/i18n';
 import { useTranslation } from 'next-i18next';
 import { MOCK_YAML } from '@/mock/yaml';
 import { yaml2Json } from '@/utils/json-yaml';
+import { getServiceEnv } from '@/store/static';
+const ErrorModal = dynamic(() => import('./components/ErrorModal'));
 
 const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) => {
   const { t } = useTranslation();
@@ -44,13 +44,13 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
   }, [screenWidth]);
 
   // form
-  const formHook = useForm<AppEditType>({
+  const formHook = useForm<any>({
     defaultValues: defaultEditVal
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const formOnchangeDebounce = useCallback(
-    debounce((data: AppEditType) => {
+    debounce((data: any) => {
       try {
         // setYamlList(formData2Yamls(data));
       } catch (error) {
@@ -60,8 +60,8 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
     []
   );
   // watch form change, compute new yaml
-  formHook.watch((data) => {
-    data && formOnchangeDebounce(data as AppEditType);
+  formHook.watch((data: any) => {
+    data && formOnchangeDebounce(data);
     setForceUpdate(!forceUpdate);
   });
 
@@ -102,6 +102,11 @@ const EditApp = ({ appName, tabType }: { appName?: string; tabType: string }) =>
   }, [formHook.formState.errors, t, toast]);
 
   useEffect(() => {
+    (async () => {
+      try {
+        await getServiceEnv();
+      } catch (error) {}
+    })();
     console.log(yaml2Json(MOCK_YAML));
   }, []);
 

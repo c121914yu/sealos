@@ -1,4 +1,4 @@
-import type { AppEditType } from '@/types/app';
+import type { TemplateType } from '@/types/app';
 
 export const editModeMap = (isEdit: boolean) => {
   if (isEdit) {
@@ -20,7 +20,7 @@ export const editModeMap = (isEdit: boolean) => {
   };
 };
 
-export const defaultEditVal: AppEditType = {
+export const defaultEditVal: TemplateType = {
   appName: 'hello-world',
   imageName: 'nginx',
   runCMD: '',
